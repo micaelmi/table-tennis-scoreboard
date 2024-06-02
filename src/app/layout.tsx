@@ -3,6 +3,7 @@ import { Nunito } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import Header from "@/components/header";
+import { Toaster } from "@/components/ui/sonner";
 
 const main_font = Nunito({
   weight: ["400", "600", "700"],
@@ -33,6 +34,7 @@ export default function RootLayout({
             <Header />
             {children}
           </main>
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>
