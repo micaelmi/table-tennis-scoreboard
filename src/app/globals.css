@@ -47,6 +47,24 @@
     --input: 217.2 32.6% 17.5%;
     --ring: 224.3 76.3% 48%;
   }
+
+  ::selection {
+    color: #fff;
+    background: #122d5a;
+  }
+
+  /* Estilizando a barra de rolagem */
+  ::-webkit-scrollbar {
+    width: 12px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: #0a1327;
+    border-radius: 2px;
+  }
+  ::-webkit-scrollbar-track {
+    background-color: #00000000;
+  }
 }
 
 @layer base {
