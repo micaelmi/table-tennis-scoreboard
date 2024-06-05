@@ -1,5 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -26,23 +27,46 @@ export default function History() {
         <TableHeader>
           <TableRow className="bg-secondary">
             <TableHead>Data</TableHead>
-            <TableHead>Jogador 1</TableHead>
-            <TableHead>Jogador 2</TableHead>
+            <TableHead>Jogador</TableHead>
+            <TableHead>Sets</TableHead>
+            <TableHead>Parciais</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {history.map((match) => (
-            <TableRow>
+            <TableRow key={match.datetime.toString()}>
               <TableCell>{format(match.datetime, "dd/MM/yyyy")}</TableCell>
               <TableCell>
-                {match.player1.name} - {match.player1.games}
-                {" ( "}
-                {match.player1.points.map((partial) => partial + " ")})
+                <div className="bg-primary/30 p-1 rounded h-8 flex items-center justify-center mb-1">
+                  {match.player1.name}
+                </div>
+                <div className="bg-primary/30 p-1 rounded h-8 flex items-center justify-center">
+                  {match.player2.name}
+                </div>
               </TableCell>
               <TableCell>
-                {match.player2.name} - {match.player2.games}
-                {" ( "}
-                {match.player2.points.map((partial) => partial + " ")})
+                <div className="bg-primary/30 p-1 rounded w-8 h-8 flex items-center justify-center mb-1">
+                  {match.player1.games}
+                </div>
+                <div className="bg-primary/30 p-1 rounded w-8 h-8 flex items-center justify-center">
+                  {match.player2.games}
+                </div>
+              </TableCell>
+              <TableCell>
+                <div className="flex gap-1 mb-1">
+                  {match.player1.points.map((partial) => (
+                    <div className="bg-primary/30 p-1 rounded w-8 h-8 flex items-center justify-center">
+                      {partial}
+                    </div>
+                  ))}
+                </div>
+                <div className="flex gap-1">
+                  {match.player2.points.map((partial) => (
+                    <div className="bg-primary/30 p-1 rounded w-8 h-8 flex items-center justify-center">
+                      {partial}
+                    </div>
+                  ))}
+                </div>
               </TableCell>
             </TableRow>
           ))}
