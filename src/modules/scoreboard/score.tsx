@@ -1,14 +1,14 @@
 "use client";
 import { Button } from "@/components/ui/button";
+import clsx from "clsx";
 import { ArrowRightLeft } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 
 export default function Score() {
-  const localMatch = localStorage.getItem("match");
-  let match: Match = {
+  const [match, setMatch] = useState<Match>({
     games: 0,
     player1: {
       name: "Jogador 1",
@@ -22,10 +22,15 @@ export default function Score() {
     },
     firstService: 1,
     datetime: new Date(),
-  };
-  if (localMatch) {
-    match = JSON.parse(localMatch);
-  }
+  });
+  useEffect(() => {
+    const localMatch = localStorage.getItem("match");
+    if (localMatch) {
+      setMatch(JSON.parse(localMatch));
+    }
+    console.log(match.firstService === 1 ? "true" : "false");
+    setPlayer1Service(match.firstService === 1 ? true : false);
+  }, []);
 
   const [player1Service, setPlayer1Service] = useState(
     match.firstService === 1 ? true : false
@@ -101,6 +106,8 @@ export default function Score() {
           match.player1.points.push(pointsPlayer1);
           match.player2.points.push(pointsPlayer2);
           match.datetime = new Date();
+          console.log("(1) MATCH");
+          console.log(match);
           localStorage.setItem("match", JSON.stringify(match));
           setGamesPlayer1((prevPoints) => {
             const gamesCount = prevPoints + 1;
@@ -109,6 +116,7 @@ export default function Score() {
           });
           setPointsPlayer1(0);
           setPointsPlayer2(0);
+          setPlayer1Service(match.firstService === 1 ? true : false);
         }
       });
     }
@@ -128,6 +136,8 @@ export default function Score() {
           match.player2.points.push(pointsPlayer2);
           match.player1.points.push(pointsPlayer1);
           match.datetime = new Date();
+          console.log("(2) MATCH");
+          console.log(match);
           localStorage.setItem("match", JSON.stringify(match));
           setGamesPlayer2((prevPoints) => {
             const gamesCount = prevPoints + 1;
@@ -136,6 +146,7 @@ export default function Score() {
           });
           setPointsPlayer1(0);
           setPointsPlayer2(0);
+          setPlayer1Service(match.firstService === 1 ? true : false);
         }
       });
     }
@@ -185,32 +196,17 @@ export default function Score() {
       {match ? (
         <section className="w-full flex flex-col">
           <div className="w-full flex gap-4 justify-around">
-            <div className="flex flex-col items-center justify-center">
-              <h3 className="text-4xl">{match.player1.name}</h3>
-              <p className="text-[10rem] py-2 border-2 border-primary rounded-lg my-2 w-full text-center">
-                {pointsPlayer1}
-              </p>
-              <div className="flex gap-4">
-                <Button
-                  className="text-3xl font-bold px-16 py-6"
-                  onClick={() => changePoint("+", 1)}
-                >
-                  +
-                </Button>
-                <Button
-                  className="text-3xl font-bold px-16 py-6 bg-red-500 hover:bg-red-600"
-                  onClick={() => changePoint("-", 1)}
-                >
-                  -
-                </Button>
-              </div>
-            </div>
+            <PlayerCard
+              player={(gamesPlayer1 + gamesPlayer2) % 2 === 0 ? 1 : 2}
+            />
             <div className="flex gap-2 flex-col items-center justify-center">
               <p className="text-3xl">Saque</p>
               <div className="py-4 flex gap-6 items-center justify-center">
                 <div className="w-16">
-                  {player1Service && (
+                  {player1Service ? (
                     <img src="service.svg" alt="Saque do jogador 1" />
+                  ) : (
+                    ""
                   )}
                 </div>
                 <button onClick={() => setPlayer1Service(!player1Service)}>
@@ -220,36 +216,27 @@ export default function Score() {
                   />
                 </button>
                 <div className="w-16">
-                  {!player1Service && (
+                  {!player1Service ? (
                     <img src="service-2.svg" alt="Saque do jogador 2" />
+                  ) : (
+                    ""
                   )}
                 </div>
               </div>
               <p className="text-2xl">Sets</p>
               <p className="text-5xl">
-                {gamesPlayer1} x {gamesPlayer2}
+                {(gamesPlayer1 + gamesPlayer2) % 2 === 0
+                  ? gamesPlayer1
+                  : gamesPlayer2}
+                x
+                {(gamesPlayer1 + gamesPlayer2) % 2 === 0
+                  ? gamesPlayer2
+                  : gamesPlayer1}
               </p>
             </div>
-            <div className="flex flex-col items-center justify-center">
-              <h3 className="text-4xl">{match.player2.name}</h3>
-              <p className="text-[10rem] py-2 border-2 border-red-500 rounded-lg my-2 w-full text-center">
-                {pointsPlayer2}
-              </p>
-              <div className="flex gap-4">
-                <Button
-                  className="text-3xl font-bold px-16 py-6 bg-red-500 hover:bg-red-600"
-                  onClick={() => changePoint("+", 2)}
-                >
-                  +
-                </Button>
-                <Button
-                  className="text-3xl font-bold px-16 py-6"
-                  onClick={() => changePoint("-", 2)}
-                >
-                  -
-                </Button>
-              </div>
-            </div>
+            <PlayerCard
+              player={(gamesPlayer1 + gamesPlayer2) % 2 === 0 ? 2 : 1}
+            />
           </div>
           <div className="mt-8 flex gap-4 self-end">
             <Link href="/">
@@ -264,4 +251,40 @@ export default function Score() {
       )}
     </>
   );
+  function PlayerCard({ player }: { player: number }) {
+    return (
+      <div className="flex flex-col items-center justify-center">
+        <h3 className="text-4xl">
+          {player === 1 ? match.player1.name : match.player2.name}
+        </h3>
+        <p
+          className={clsx(
+            "text-[10rem] py-2 border-2 rounded-lg my-2 w-full text-center",
+            { "border-primary": player === 1 },
+            { "border-red-500": player === 2 }
+          )}
+        >
+          {player === 1 ? pointsPlayer1 : pointsPlayer2}
+        </p>
+        <div className="flex gap-4">
+          <Button
+            className={clsx("text-3xl font-bold px-16 py-6", {
+              "bg-red-500 hover:bg-red-600": player === 2,
+            })}
+            onClick={() => changePoint("+", player)}
+          >
+            +
+          </Button>
+          <Button
+            className={clsx("text-3xl font-bold px-16 py-6", {
+              "bg-red-500 hover:bg-red-600": player === 1,
+            })}
+            onClick={() => changePoint("-", player)}
+          >
+            -
+          </Button>
+        </div>
+      </div>
+    );
+  }
 }

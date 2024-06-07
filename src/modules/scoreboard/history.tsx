@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/table";
 import { format } from "date-fns";
 import { Trash2Icon } from "lucide-react";
-import Image from "next/image";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 
