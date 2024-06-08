@@ -23,18 +23,20 @@ export default function Score() {
     firstService: 1,
     datetime: new Date(),
   });
-  useEffect(() => {
-    const localMatch = localStorage.getItem("match");
-    if (localMatch) {
-      setMatch(JSON.parse(localMatch));
-    }
-    console.log(match.firstService === 1 ? "true" : "false");
-    setPlayer1Service(match.firstService === 1 ? true : false);
-  }, []);
 
   const [player1Service, setPlayer1Service] = useState(
     match.firstService === 1 ? true : false
   );
+
+  useEffect(() => {
+    const localMatch = localStorage.getItem("match");
+    if (localMatch) {
+      const parsedMatch = JSON.parse(localMatch);
+      setMatch(parsedMatch);
+      setPlayer1Service(parsedMatch.firstService === 1 ? true : false);
+    }
+  }, []);
+
   const [pointsPlayer1, setPointsPlayer1] = useState(0);
   const [pointsPlayer2, setPointsPlayer2] = useState(0);
   const [gamesPlayer1, setGamesPlayer1] = useState(match.player1.games);
